@@ -23,7 +23,9 @@ def evaluate_lofo_models(
     models: Dict[str, object]
 ) -> Tuple[Dict[str, Dict[str, list]], pd.DataFrame]:
     """
-    Evaluate multiple models using Leave-One-Fish-Out (LOFO) cross-validation.
+    Evaluate machine learning models using Leave-One-Fish-Out (LOFO) validation.
+    Tests models on different feature types (RF-selected vs PCA),
+    while keeping individual fish separate.
 
     Args:
         df_filtered (pd.DataFrame): DataFrame with species labels and fishNum groups.
@@ -36,20 +38,23 @@ def evaluate_lofo_models(
             - Raw accuracy results for each fold.
             - Summary DataFrame of mean accuracies.
     """
-    logo = LeaveOneGroupOut()
-    groups = df_filtered['fishNum']
-    results = {model: {"accuracy": []} for model in models}
+    # Create group-based cross-validation splitter
+    group_cv = LeaveOneGroupOut()  # group_cv = Leave-One-Group-Out splitter
+    groups = df_filtered['fishNum']  
+    results = {model: {"accuracy": []} for model in models} 
 
-    for train_idx, test_idx in logo.split(df_filtered, df_filtered['species_label'], groups):
+    # Split data into training/test sets
+    for train_idx, test_idx in group_cv.split(df_filtered, df_filtered['species_label'], groups):
         X_train_rf, X_test_rf = X_rf_selected.iloc[train_idx], X_rf_selected.iloc[test_idx]
         X_train_pca, X_test_pca = X_pca[train_idx], X_pca[test_idx]
         y_train = df_filtered.loc[train_idx, 'species_label']
         y_test = df_filtered.loc[test_idx, 'species_label']
-
+        # Standardize features to z-score
         scaler_rf = StandardScaler()
         X_train_rf_scaled = scaler_rf.fit_transform(X_train_rf)
         X_test_rf_scaled = scaler_rf.transform(X_test_rf)
 
+        # Train and evaluate each model
         for model_name, model in models.items():
             if model_name == "RandomForest_Selected":
                 X_train, X_test = X_train_rf_scaled, X_test_rf_scaled
@@ -60,7 +65,8 @@ def evaluate_lofo_models(
             y_pred = model.predict(X_test)
 
             results[model_name]["accuracy"].append(accuracy_score(y_test, y_pred))
-
+    
+    # Create summary table
     summary = {
         model: {
             "Mean Accuracy": np.mean(results[model]["accuracy"])
@@ -74,7 +80,8 @@ def evaluate_lofo_xgboost_multi(
     groups: pd.Series
 ) -> Tuple[Dict[str, Dict[str, list]], pd.DataFrame]:
     """
-    Evaluate multiple XGBoost models using different feature sets via LOFO cross-validation.
+    Compare different feature sets using XGBoost with fish-out validation.
+    Helps identify which features work best.
 
     Args:
         df_filtered (pd.DataFrame): DataFrame with species_label column.
@@ -87,9 +94,9 @@ def evaluate_lofo_xgboost_multi(
             - Summary DataFrame of mean accuracy.
     """
     results = {name: {"accuracy": []} for name in feature_sets}
-    logo = LeaveOneGroupOut()
+    group_cv = LeaveOneGroupOut()
 
-    for train_idx, test_idx in logo.split(df_filtered, df_filtered['species_label'], groups):
+    for train_idx, test_idx in group_cv.split(df_filtered, df_filtered['species_label'], groups):
         y_train = df_filtered.iloc[train_idx]['species_label']
         y_test = df_filtered.iloc[test_idx]['species_label']
 
@@ -226,10 +233,10 @@ def evaluate_lofo_xgboost_smote(
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X_new)
 
-    logo = LeaveOneGroupOut()
+    group_cv = LeaveOneGroupOut()
     results = {"accuracy": []}
 
-    for train_idx, test_idx in logo.split(X_scaled, y_new, groups):
+    for train_idx, test_idx in group_cv.split(X_scaled, y_new, groups):
         X_train, X_test = X_scaled[train_idx], X_scaled[test_idx]
         y_train, y_test = y_new.iloc[train_idx], y_new.iloc[test_idx]
 
@@ -292,10 +299,10 @@ def evaluate_lofo_rf_smote(
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X_new)
 
-    logo = LeaveOneGroupOut()
+    group_cv = LeaveOneGroupOut()
     results = {"accuracy": []}
 
-    for train_idx, test_idx in logo.split(X_scaled, y_new, groups):
+    for train_idx, test_idx in group_cv.split(X_scaled, y_new, groups):
         X_train, X_test = X_scaled[train_idx], X_scaled[test_idx]
         y_train, y_test = y_new.iloc[train_idx], y_new.iloc[test_idx]
 

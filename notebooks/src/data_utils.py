@@ -3,7 +3,7 @@ from typing import List, Dict
 
 def load_fish_csvs(file_list: List[str], base_path: str = "../data/") -> Dict[str, pd.DataFrame]:
     """
-    Load hydroacoustic fish data from a list of CSV files into a dictionary.
+    Load multiple hydroacoustic fish detection CSVs into separate Pandas DataFrames.
 
     Args:
         file_list (List[str]): List of CSV filenames.
@@ -34,5 +34,3 @@ def merge_and_parse_timestamps(df: pd.DataFrame) -> pd.DataFrame:
     df["Ping_time"] = pd.to_datetime(df["Ping_time"].str.strip(), format="%H:%M:%S.%f").dt.time
     df["Ping_time"] = df.apply(lambda row: pd.Timestamp.combine(row["dateProcessed"], row["Ping_time"]), axis=1)
     return df
-
-print("Functions available:", dir())

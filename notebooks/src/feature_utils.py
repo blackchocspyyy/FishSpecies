@@ -8,7 +8,7 @@ from typing import Tuple, List, Set
 
 def select_frequency_columns(df: pd.DataFrame) -> List[str]:
     """
-    Select columns starting with F and followed by a number.
+    Select columns starting with F and followed by a number (frequency responses).
 
     Args:
         df (pd.DataFrame): Input DataFrame.
@@ -54,7 +54,9 @@ def reduce_features_by_variance_and_correlation(
 
 def get_top_features_by_random_forest(df: pd.DataFrame, features: List[str], target_col: str, top_k: int = 30) -> List[str]:
     """
-    Use Random Forest to get top K important features.
+    Identify most important features using Random Forest algorithm.
+    
+    Trains a classifier and ranks features by their predictive importance.
 
     Args:
         df (pd.DataFrame): Input DataFrame.
@@ -79,7 +81,7 @@ def get_top_features_by_random_forest(df: pd.DataFrame, features: List[str], tar
 
 def apply_pca(X_scaled: np.ndarray, n_components: int = 10) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Apply PCA to reduce features.
+    Reduce feature dimensionality using Principal Component Analysis (PCA).
 
     Args:
         X_scaled (np.ndarray): Standardized features.
