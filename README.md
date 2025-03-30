@@ -1,5 +1,5 @@
 # Hydroacoustic-Based Fish Species Classification
-### For Prof. Leos Barajas, please check the Progress Report/ folder directly. It contains the most up-to-date code and processed data.
+### For Prof. Leos Barajas, please check the Progress Report/ folder directly. It contains the most up-to-date code.
 
 This project explores machine learning and deep learning approaches for fish species classification using hydroacoustic data. Traditional monitoring methods like trawling and netting are costly and disruptive to aquatic ecosystems. This study investigates Long Short-Term Memory (LSTM) models to classify Lake Trout (LT) and Smallmouth Bass (SMB) based on sound wave reflections at different frequencies.
 
