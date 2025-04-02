@@ -1,5 +1,5 @@
 # Hydroacoustic-Based Fish Species Classification
-### For Prof. Leos Barajas, please check the notebooks/ folder directly. It contains the most up-to-date code.
+### For Prof. Leos Barajas, please check the notebooks/ folder directly. It contains the most up-to-date code. The main python file is called "FishClassificationCode.ipynb", utilities are under notebooks/src/.
 
 This project focuses on classifying Lake Trout and Smallmouth Bass using hydroacoustic data collected from fish provided by our collaborators. Multiple models were built and evaluated, including traditional machine learning models such as Logistic Regression, Random Forest, and XGBoost. While XGBoost achieved the highest performance among these methods (~72% accuracy), it was limited by its inability to capture the time-series structure in the data.
 
